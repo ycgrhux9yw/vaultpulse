@@ -63,3 +63,14 @@ func TestEvaluateRotation_PathPreserved(t *testing.T) {
 		t.Errorf("expected path %q, got %q", path, result.Path)
 	}
 }
+
+func TestEvaluateRotation_ExactBoundary(t *testing.T) {
+	// Exactly at the warn threshold boundary (MaxAge - WarnBefore) should be RotationDue
+	policy := DefaultRotationPolicy
+	lastRotated := time.Now().Add(-(policy.MaxAge - policy.WarnBefore))
+	result := EvaluateRotation("secret/boundary/test", lastRotated, policy)
+
+	if result.Status != RotationDue {
+		t.Errorf("expected DUE at warn boundary, got %s: %s", result.Status, result.Message)
+	}
+}
