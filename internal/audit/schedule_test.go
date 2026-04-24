@@ -50,6 +50,17 @@ func TestEvaluateSchedule_MessageNotEmpty(t *testing.T) {
 	}
 }
 
+// TestEvaluateSchedule_PathPropagated verifies that the report carries the
+// same path as the input entry, so callers can correlate results.
+func TestEvaluateSchedule_PathPropagated(t *testing.T) {
+	const wantPath = "secret/mykey"
+	entry := makeEntry(wantPath, 24*time.Hour, -time.Hour)
+	report := EvaluateSchedule(entry, time.Hour)
+	if report.Path != wantPath {
+		t.Errorf("expected path %q, got %q", wantPath, report.Path)
+	}
+}
+
 func TestBuildSchedule(t *testing.T) {
 	policies := map[string]time.Duration{
 		"secret/a": 24 * time.Hour,
