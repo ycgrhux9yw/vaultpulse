@@ -86,3 +86,22 @@ func FormatSummary(s SummaryReport) string {
 	}
 	return sb.String()
 }
+
+// ActionableInsights returns a slice of human-readable recommendation strings
+// derived from the summary, suitable for display in CLI output or reports.
+func ActionableInsights(s SummaryReport) []string {
+	var insights []string
+	if n := s.ByStatus["expired"]; n > 0 {
+		insights = append(insights, fmt.Sprintf("Rotate %d expired secret(s) immediately.", n))
+	}
+	if n := s.ByStatus["critical"]; n > 0 {
+		insights = append(insights, fmt.Sprintf("Review %d critical secret(s) expiring very soon.", n))
+	}
+	if s.AvgTTLDays > 0 && s.AvgTTLDays < 7 {
+		insights = append(insights, fmt.Sprintf("Average TTL is low (%.1f days); consider extending secret lifetimes.", s.AvgTTLDays))
+	}
+	if s.Score < 50 {
+		insights = append(insights, "Overall vault health is poor; prioritise a full secret audit.")
+	}
+	return insights
+}
