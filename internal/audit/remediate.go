@@ -90,3 +90,13 @@ func FormatPlan(plan RemediationPlan) string {
 	}
 	return sb.String()
 }
+
+// CountByPriority returns a map of priority level to the number of actions at that level.
+// This is useful for generating summary statistics from a remediation plan.
+func (p RemediationPlan) CountByPriority() map[int]int {
+	counts := make(map[int]int)
+	for _, a := range p.Actions {
+		counts[a.Priority]++
+	}
+	return counts
+}
